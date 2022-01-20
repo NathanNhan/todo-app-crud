@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import ItemEdit from "./components/ItemEdit";
 import ItemView from "./components/ItemView";
 import { nanoid } from "nanoid";
-import { data } from "./data";
 export default function App() {
  
   const [users, setUsers] = useState(localStorage.getItem("item") ? JSON.parse(localStorage.getItem("item")) : []);
   const [name, setName] = useState("");
   const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState("");
+  //save local storage 
   useEffect(()=> {
     localStorage.setItem("item" , JSON.stringify(users));
   })
@@ -21,17 +21,18 @@ export default function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const newName = {
+      id: nanoid(),
       name,
     };
     setUsers([...users, newName]);
     setName("");
-    localStorage.setItem("item" , JSON.stringify(users));
+    
   };
   //delete item
   const handleDelete = (id) => {
     const DeletedItem = users.filter((item) => item.id !== id);
     setUsers(DeletedItem);
-    localStorage.setItem("item" , JSON.stringify(users));
+    
   };
   //edit item
   const handleEditClick = (e, item) => {
@@ -60,7 +61,7 @@ export default function App() {
     newUser[index] = EditedData;
     setUsers(newUser);
     setEditId(null);
-    localStorage.setItem("item" , JSON.stringify(users));
+    
   };
   //toggle complete item
   const handleComple = (index) => {
