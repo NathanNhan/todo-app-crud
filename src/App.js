@@ -1,25 +1,92 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import ItemEdit from "./components/ItemEdit";
+import ItemView from "./components/ItemView";
+import { nanoid } from "nanoid";
+import { data } from "./data";
+export default function App() {
+  const [users, setUsers] = useState(data.expenses);
+  const [name, setName] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [editName, setEditName] = useState("");
 
-function App() {
+  const handleChange = (e) => {
+    e.preventDefault();
+    setName(e.target.value);
+  };
+  //submit item
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newName = {
+      name,
+    };
+    setUsers([...users, newName]);
+    setName("");
+  };
+  //delete item
+  const handleDelete = (id) => {
+    const DeletedItem = users.filter((item) => item.id !== id);
+    setUsers(DeletedItem);
+  };
+  //edit item
+  const handleEditClick = (e, item) => {
+    e.preventDefault();
+    setEditId(item.id);
+    const EditName = {
+      name: item.name,
+    };
+    setEditName(EditName);
+  };
+  //edit change
+  const handleEditChange = (e) => {
+    e.preventDefault();
+    setEditName({ ...name, [e.target.name]: e.target.value });
+  };
+  //edit submit
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    const newUser = [...users];
+    console.log(newUser);
+    let EditedData = {
+      id: nanoid(),
+      name: editName.name,
+    };
+    const index = users.findIndex((item) => item.id === editId);
+    newUser[index] = EditedData;
+    setUsers(newUser);
+    setEditId(null);
+  };
+  //toggle complete item
+  const handleComple = (index) => {
+    const newItems = [...users];
+    newItems[index].selected = !newItems[index].selected;
+    setUsers(newItems);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {users.map((item, index) => (
+        <>
+          {editId === item.id ? (
+            <ItemEdit
+              editName={editName}
+              handleEditChange={handleEditChange}
+              handleEditSubmit={handleEditSubmit}
+            />
+          ) : (
+            <ItemView
+              handleDelete={handleDelete}
+              item={item}
+              handleEditClick={handleEditClick}
+              index={index}
+              handleComple={handleComple}
+              selected={item.selected}
+            />
+          )}
+        </>
+      ))}
+      <form onSubmit={handleSubmit}>
+        <h1>Add Form</h1>
+        <input name="name" value={name} onChange={handleChange} />
+      </form>
+    </>
   );
 }
-
-export default App;
